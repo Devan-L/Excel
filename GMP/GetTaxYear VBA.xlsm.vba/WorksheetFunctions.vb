@@ -1,6 +1,6 @@
 Attribute VB_Name = "WorksheetFunctions"
 Public Function GetTaxYear(ByVal DateAsText As String)
-    
+    ' Temporarily add a comment
     If Len(DateAsText) <> 10 Then
         GetTaxYear = "Date Must Be 10 Characters"
         Exit Function
