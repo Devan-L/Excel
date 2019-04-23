@@ -1,234 +1,231 @@
-Private Function pNINOValidation(ByVal iNINO As String)
+Private Function IsNINOValid(ByVal NINO As String)
 
     'Presence Check
-    If iNINO = "" Then
-        pNINOValidation = "Missing NINO"
+    If NINO = "" Then
+        IsNINOValid = "Missing NINO"
         Exit Function
     End If
 
 
 
     'Test length
-        If Len(iNINO) > 9 Then pNINOValidation = "NINO: Too Long"
-        If Len(iNINO) < 8 Then pNINOValidation = "NINO: Too Short"
-    If pNINOValidation <> "" Then Exit Function
+	If Len(NINO) > 9 Then IsNINOValid = "NINO: Too Long"
+	If Len(NINO) < 8 Then IsNINOValid = "NINO: Too Short"
+    If IsNINOValid <> "" Then Exit Function
     
     'Test format AANNNNNNA
-        If Not Left(iNINO, 1) Like "[a-z,A-Z]" Or _
-            Not Right(Left(iNINO, 2), 1) Like "[a-z,A-Z]" Or _
-            Not Right(Left(iNINO, 3), 1) Like "[0-9]" Or _
-            Not Right(Left(iNINO, 4), 1) Like "[0-9]" Or _
-            Not Right(Left(iNINO, 5), 1) Like "[0-9]" Or _
-            Not Right(Left(iNINO, 6), 1) Like "[0-9]" Or _
-            Not Right(Left(iNINO, 7), 1) Like "[0-9]" Or _
-            Not Right(Left(iNINO, 8), 1) Like "[0-9]" Then pNINOValidation = "NINO: Invalid Format"
+	If Not Left(NINO, 1) Like "[a-z,A-Z]" Or _
+		Not Right(Left(NINO, 2), 1) Like "[a-z,A-Z]" Or _
+		Not Right(Left(NINO, 3), 1) Like "[0-9]" Or _
+		Not Right(Left(NINO, 4), 1) Like "[0-9]" Or _
+		Not Right(Left(NINO, 5), 1) Like "[0-9]" Or _
+		Not Right(Left(NINO, 6), 1) Like "[0-9]" Or _
+		Not Right(Left(NINO, 7), 1) Like "[0-9]" Or _
+		Not Right(Left(NINO, 8), 1) Like "[0-9]" Then IsNINOValid = "NINO: Invalid Format"
     
         
         'Optional 9th character
-        If Len(iNINO) = 9 Then
-            If Not Right(iNINO, 1) Like "[a-z,A-Z]" Then pNINOValidation = "NINO: Invalid Format"
-        End If
-    If pNINOValidation <> "" Then Exit Function
+	If Len(NINO) = 9 Then
+		If Not Right(NINO, 1) Like "[a-z,A-Z]" Then IsNINOValid = "NINO: Invalid Format"
+	End If
+    If IsNINOValid <> "" Then Exit Function
 
 
     'Test First Character
-        If Left(iNINO, 1) = "D" Or Left(iNINO, 1) = "F" Or Left(iNINO, 1) = "I" Or Left(iNINO, 1) = "Q" Or Left(iNINO, 1) = "U" Or Left(iNINO, 1) = "V" Then pNINOValidation = "NINO: Invalid Character Present"
+	If Left(NINO, 1) = "D" Or Left(NINO, 1) = "F" Or Left(NINO, 1) = "I" Or Left(NINO, 1) = "Q" Or Left(NINO, 1) = "U" Or Left(NINO, 1) = "V" Then IsNINOValid = "NINO: Invalid Character Present"
 
     'Test Second Character
-        If Left(iNINO, 1) = "D" Or Left(iNINO, 1) = "F" Or Left(iNINO, 1) = "I" Or Left(iNINO, 1) = "O" Or Left(iNINO, 1) = "Q" Or Left(iNINO, 1) = "U" Or Left(iNINO, 1) = "V" Then pNINOValidation = "NINO: Invalid Character Present"
+	If Left(NINO, 1) = "D" Or Left(NINO, 1) = "F" Or Left(NINO, 1) = "I" Or Left(NINO, 1) = "O" Or Left(NINO, 1) = "Q" Or Left(NINO, 1) = "U" Or Left(NINO, 1) = "V" Then IsNINOValid = "NINO: Invalid Character Present"
 
     'Test First Two Characters
-        If Left(iNINO, 2) = "BG" Or Left(iNINO, 1) = "GB" Or Left(iNINO, 1) = "KN" Or Left(iNINO, 1) = "NT" Or Left(iNINO, 1) = "ZZ" Then pNINOValidation = "NINO: Invalid Character Present"
+	If Left(NINO, 2) = "BG" Or Left(NINO, 1) = "GB" Or Left(NINO, 1) = "KN" Or Left(NINO, 1) = "NT" Or Left(NINO, 1) = "ZZ" Then IsNINOValid = "NINO: Invalid Character Present"
 
 
-If pNINOValidation <> "" Then Exit Function
-pNINOValidation = "NINO: Pass"
+	If IsNINOValid <> "" Then Exit Function
+	IsNINOValid = "NINO: Pass"
 
 End Function
 
-Private Function pPostcodeValidation(ByVal iPostcode As String)
+Private Function IsPostcodeValid(ByVal Postcode As String)
     
     Dim iOutwardCode As String
     Dim iInwardCode As String
     
     
     'Presence Check
-    If iPostcode = "" Then
-        pPostcodeValidation = "Postcode: Missing"
+    If Postcode = "" Then
+        IsPostcodeValid = "Postcode: Missing"
         Exit Function
     End If
     
     On Error Resume Next
     
-    iOutwardCode = Left(iPostcode, WorksheetFunction.Find(" ", iPostcode) - 1)
-    iInwardCode = Right(iPostcode, Len(iPostcode) - WorksheetFunction.Find(" ", iPostcode))
+    iOutwardCode = Left(Postcode, WorksheetFunction.Find(" ", Postcode) - 1)
+    iInwardCode = Right(Postcode, Len(Postcode) - WorksheetFunction.Find(" ", Postcode))
     
     On Error GoTo 0
     
     'Overall length
-        If Len(iPostcode) > 8 Then pPostcodeValidation = "Postcode: Too Long"
-        If Len(iPostcode) < 6 Then pPostcodeValidation = "Postcode: Too Short"
-    If pPostcodeValidation <> "" Then Exit Function
+	If Len(Postcode) > 8 Then IsPostcodeValid = "Postcode: Too Long"
+	If Len(Postcode) < 6 Then IsPostcodeValid = "Postcode: Too Short"
+    If IsPostcodeValid <> "" Then Exit Function
     
     'Outward Code length
-        If Len(iOutwardCode) > 4 Then pPostcodeValidation = "Postcode: Outward Code too long"
-        If Len(iOutwardCode) < 2 Then pPostcodeValidation = "Postcode: Outward Code too short"
-    If pPostcodeValidation <> "" Then Exit Function
+        If Len(iOutwardCode) > 4 Then IsPostcodeValid = "Postcode: Outward Code too long"
+        If Len(iOutwardCode) < 2 Then IsPostcodeValid = "Postcode: Outward Code too short"
+    If IsPostcodeValid <> "" Then Exit Function
     
     'Outward code format checks:
     
-        'AN
-        If Len(iOutwardCode) = 2 Then
-            If Not (Left(iOutwardCode, 1) Like "[a-z,A-Z]" And _
-                Right(Left(iOutwardCode, 2), 1) Like "[0-9]") Then
-                pPostcodeValidation = "Postcode: Invalid Format for Outward Code"
-                Exit Function
-            End If
-        End If
+	'AN
+	If Len(iOutwardCode) = 2 Then
+		If Not (Left(iOutwardCode, 1) Like "[a-z,A-Z]" And _
+			Right(Left(iOutwardCode, 2), 1) Like "[0-9]") Then
+			IsPostcodeValid = "Postcode: Invalid Format for Outward Code"
+			Exit Function
+		End If
+	End If
         
-        'ANN / AAN /ANA
-        If Len(iOutwardCode) = 3 Then
-            If Not (Left(iOutwardCode, 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 2), 1) Like "[0-9]" And Right(Left(iOutwardCode, 3), 1) Like "[0-9]") Or _
-                (Left(iOutwardCode, 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 2), 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 3), 1) Like "[0-9]") Or _
-                (Left(iOutwardCode, 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 2), 1) Like "[0-9]" And Right(Left(iOutwardCode, 3), 1) Like "[a-z,A-Z]") Then
-                pPostcodeValidation = "Postcode: Invalid Format for Outward Code"
-                Exit Function
-            End If
-        End If
-        
-        'AANA / AANN
-        If Len(iOutwardCode) = 4 Then
-            If Not (Left(iOutwardCode, 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 2), 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 3), 1) Like "[0-9]" And Right(Left(iOutwardCode, 4), 1) Like "[0-9]") Or _
-                (Left(iOutwardCode, 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 2), 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 3), 1) Like "[0-9]" And Right(Left(iOutwardCode, 4), 1) Like "[a-z,A-Z]") Then
-                pPostcodeValidation = "Postcode: Invalid Format for Outward Code"
-                Exit Function
-            End If
-        End If
-                 
+	'ANN / AAN /ANA
+	If Len(iOutwardCode) = 3 Then
+		If Not (Left(iOutwardCode, 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 2), 1) Like "[0-9]" And Right(Left(iOutwardCode, 3), 1) Like "[0-9]") Or _
+			(Left(iOutwardCode, 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 2), 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 3), 1) Like "[0-9]") Or _
+			(Left(iOutwardCode, 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 2), 1) Like "[0-9]" And Right(Left(iOutwardCode, 3), 1) Like "[a-z,A-Z]") Then
+			IsPostcodeValid = "Postcode: Invalid Format for Outward Code"
+			Exit Function
+		End If
+	End If
+	
+	'AANA / AANN
+	If Len(iOutwardCode) = 4 Then
+		If Not (Left(iOutwardCode, 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 2), 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 3), 1) Like "[0-9]" And Right(Left(iOutwardCode, 4), 1) Like "[0-9]") Or _
+			(Left(iOutwardCode, 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 2), 1) Like "[a-z,A-Z]" And Right(Left(iOutwardCode, 3), 1) Like "[0-9]" And Right(Left(iOutwardCode, 4), 1) Like "[a-z,A-Z]") Then
+			IsPostcodeValid = "Postcode: Invalid Format for Outward Code"
+			Exit Function
+		End If
+	End If
+			 
 
     'Inward Code Format Check (NAA)
     If (Not Left(iInwardCode, 1) Like "[0-9]" Or Not Right(Left(iInwardCode, 2), 1) Like "[a-z,A-Z]" Or Not Right(Left(iInwardCode, 3), 1) Like "[a-z,A-Z]") Then
-        pPostcodeValidation = "Postcode: Invalid Format for Inward Code"
+        IsPostcodeValid = "Postcode: Invalid Format for Inward Code"
         Exit Function
     End If
 
 
 
     'Check Outward Code Banned Letters
-        'First Alpha Check
-            If Left(iOutwardCode, 1) = "Q" Or Left(iOutwardCode, 1) = "V" Or Left(iOutwardCode, 1) = "X" Then pPostcodeValidation = "Postcode: Invalid Alpha Character in Outward Code"
-        
-        'Second Alpha Check
-            If Right(Left(iOutwardCode, 2), 1) = "I" Or Right(Left(iOutwardCode, 1), 1) = "J" Or Right(Left(iOutwardCode, 1), 1) = "Z" Then pPostcodeValidation = "Postcode: Invalid Alpha Character in Outward Code"
-        
-        'Third Position Check
-            If Not IsNumeric(Right(Left(iOutwardCode, 3), 1)) Then
-                If Right(Left(iOutwardCode, 3), 1) <> "A" And Right(Left(iOutwardCode, 3), 1) <> "B" And Right(Left(iOutwardCode, 3), 1) <> "C" And Right(Left(iOutwardCode, 3), 1) <> "D" And Right(Left(iOutwardCode, 3), 1) <> "E" And Right(Left(iOutwardCode, 3), 1) <> "F" And Right(Left(iOutwardCode, 3), 1) <> "G" And Right(Left(iOutwardCode, 3), 1) <> "H" And Right(Left(iOutwardCode, 3), 1) <> "J" And Right(Left(iOutwardCode, 3), 1) <> "K" And Right(Left(iOutwardCode, 3), 1) <> "P" And Right(Left(iOutwardCode, 3), 1) <> "R" And Right(Left(iOutwardCode, 3), 1) <> "S" And Right(Left(iOutwardCode, 3), 1) <> "T" And Right(Left(iOutwardCode, 3), 1) <> "U" Then pPostcodeValidation = "Postcode: Invalid Alpha Character in Outward Code"
-            End If
-
-
+	'First Alpha Check
+	If Left(iOutwardCode, 1) = "Q" Or Left(iOutwardCode, 1) = "V" Or Left(iOutwardCode, 1) = "X" Then IsPostcodeValid = "Postcode: Invalid Alpha Character in Outward Code"
+	
+	'Second Alpha Check
+	If Right(Left(iOutwardCode, 2), 1) = "I" Or Right(Left(iOutwardCode, 1), 1) = "J" Or Right(Left(iOutwardCode, 1), 1) = "Z" Then IsPostcodeValid = "Postcode: Invalid Alpha Character in Outward Code"
+	
+	'Third Position Check
+	If Not IsNumeric(Right(Left(iOutwardCode, 3), 1)) Then
+		If Right(Left(iOutwardCode, 3), 1) <> "A" And Right(Left(iOutwardCode, 3), 1) <> "B" And Right(Left(iOutwardCode, 3), 1) <> "C" And Right(Left(iOutwardCode, 3), 1) <> "D" And Right(Left(iOutwardCode, 3), 1) <> "E" And Right(Left(iOutwardCode, 3), 1) <> "F" And Right(Left(iOutwardCode, 3), 1) <> "G" And Right(Left(iOutwardCode, 3), 1) <> "H" And Right(Left(iOutwardCode, 3), 1) <> "J" And Right(Left(iOutwardCode, 3), 1) <> "K" And Right(Left(iOutwardCode, 3), 1) <> "P" And Right(Left(iOutwardCode, 3), 1) <> "R" And Right(Left(iOutwardCode, 3), 1) <> "S" And Right(Left(iOutwardCode, 3), 1) <> "T" And Right(Left(iOutwardCode, 3), 1) <> "U" Then IsPostcodeValid = "Postcode: Invalid Alpha Character in Outward Code"
+	End If
 
     'Inward Code Banned Letter Check
-    If iInwardCode Like "*C*" Or iInwardCode Like "*I*" Or iInwardCode Like "*K*" Or iInwardCode Like "*M*" Or iInwardCode Like "*O*" Or iInwardCode Like "*V*" Then pPostcodeValidation = "Postcode: Invalid Inward Code"
+    If iInwardCode Like "*C*" Or iInwardCode Like "*I*" Or iInwardCode Like "*K*" Or iInwardCode Like "*M*" Or iInwardCode Like "*O*" Or iInwardCode Like "*V*" Then IsPostcodeValid = "Postcode: Invalid Inward Code"
     
-    
-
-
-If pPostcodeValidation <> "" Then Exit Function
-pPostcodeValidation = "Postcode: Pass"
+	
+	If IsPostcodeValid <> "" Then Exit Function
+	IsPostcodeValid = "Postcode: Pass"
 
 End Function
 
-Private Function pTitleGenderValidation(ByVal iTitle As String, ByVal iGender As String)
+Private Function IsTitleGenderValid(ByVal Title As String, ByVal Gender As String)
     
     
     'Title presence
-    If iTitle = "" Then
-        pTitleGenderValidation = "Missing Title"
+    If Title = "" Then
+        IsTitleGenderValid = "Missing Title"
         Exit Function
     End If
         
     'Gender presence
-    If iGender = "" Then
-        pTitleGenderValidation = "Missing Gender"
+    If Gender = "" Then
+        IsTitleGenderValid = "Missing Gender"
         Exit Function
     End If
             
     'Gender Valid
-    If iGender <> "M" And iGender <> "Male" And iGender <> "F" And iGender <> "Female" Then
-        pTitleGenderValidation = "Gender: Invalid Value"
+    If Gender <> "M" And Gender <> "Male" And Gender <> "F" And Gender <> "Female" Then
+        IsTitleGenderValid = "Gender: Invalid Value"
         Exit Function
     End If
         
     'Male Title with Female Check
-    If (iTitle = "MR" Or iTitle = "SIR" Or iTitle = "Rev" Or iTitle = "Lord" Or iTitle = "CAPT") And (iGender = "F" Or iGender = "Female") Then
-        pTitleGenderValidation = "Gender/Title: Inconsistent Gender and Title"
+    If (Title = "MR" Or Title = "SIR" Or Title = "Rev" Or Title = "Lord" Or Title = "CAPT") And (Gender = "F" Or Gender = "Female") Then
+        IsTitleGenderValid = "Gender/Title: Inconsistent Gender and Title"
         Exit Function
     End If
     
     'Female Title with Male Check
-    If (iTitle = "MS" Or iTitle = "Miss" Or iTitle = "MRS") And (iGender = "M" Or iGender = "Male") Then
-        pTitleGenderValidation = "Gender/Title: Inconsistent Gender and Title"
+    If (Title = "MS" Or Title = "Miss" Or Title = "MRS") And (Gender = "M" Or Gender = "Male") Then
+        IsTitleGenderValid = "Gender/Title: Inconsistent Gender and Title"
         Exit Function
     End If
     
     'Misc other titles
     'Dr / Cdr / EUR.ING
     
-If pTitleGenderValidation <> "" Then Exit Function
-pTitleGenderValidation = "Gender/Title: Pass"
-End Function
+	If IsTitleGenderValid <> "" Then Exit Function
+	IsTitleGenderValid = "Gender/Title: Pass"
 
-Private Function pSurnameValidation(ByVal iSurname As String)
+	End Function
+
+Private Function IsSurnameValid(ByVal Surname As String)
 
     'Presence Check
-    If iSurname = "" Then
-        pSurnameValidation = "Missing Surname"
+    If Surname = "" Then
+        IsSurnameValid = "Missing Surname"
         Exit Function
     End If
 
 
     'Format Check:
-            If iSurname Like "*[0-9,!,£,$,%,^,&,*,(,),+,=,_,`,¬,\,|,<,>,?,/,'.,:,#,~,[,{,}]*" Then
-                pSurnameValidation = "Surname: Invalid Format"
-                Exit Function
-            End If
+	If Surname Like "*[0-9,!,£,$,%,^,&,*,(,),+,=,_,`,¬,\,|,<,>,?,/,'.,:,#,~,[,{,}]*" Then
+		IsSurnameValid = "Surname: Invalid Format"
+		Exit Function
+	End If
 
 
         
-If pSurnameValidation <> "" Then Exit Function
-pSurnameValidation = "Surname: Pass"
+	If IsSurnameValid <> "" Then Exit Function
+	IsSurnameValid = "Surname: Pass"
 
 End Function
 
-Private Function pDOBValidation(ByVal istrDOB As String)
-    
-    Dim iDOB As Date
+Private Function IsDOBValid(ByVal DOB As String)
+	''' Dates in culture insensitive format will still pass checks!
+	
+    Dim ParsedDOB As Date
 
     'Presence Check
-    If istrDOB = "" Then
-        pDOBValidation = "Missing DOB"
+    If DOB = "" Then
+        IsDOBValid = "Missing DOB"
         Exit Function
     End If
 
     On Error Resume Next
-    iDOB = DateValue(istrDOB)
+    ParsedDOB = DateValue(DOB)
     On Error GoTo 0
 
     'Format Check:
-    If Not IsDate(iDOB) Or iDOB = 0 Then
-        pDOBValidation = "DOB: Invalid Format for Date"
+    If Not IsDate(ParsedDOB) Or ParsedDOB = 0 Then
+        IsDOBValid = "DOB: Invalid Format for Date"
         Exit Function
     End If
 
-
     'Future Date Check:
-    If iDOB > Now Then
-        pDOBValidation = "DOB: Future Date"
+    If ParsedDOB > Now Then
+        IsDOBValid = "DOB: Future Date"
         Exit Function
     End If
         
-If pDOBValidation <> "" Then Exit Function
-pDOBValidation = "DOB: Pass"
+	If IsDOBValid <> "" Then Exit Function
+	IsDOBValid = "DOB: Pass"
 
 End Function
