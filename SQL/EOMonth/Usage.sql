@@ -1,0 +1,1 @@
+SELECT dbo.EOMonth('2016-02-11')
