@@ -18,7 +18,7 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
         public string SelectedFilePath { get; set; } = @"C:\Users\Samji\Downloads\MOCK_DATA (1).txt";
         public IEnumerable<object> Results { get; set; }
 
-        [PropertyChanged.AlsoNotifyFor(nameof(SqlServerCreateStatement))]
+        [PropertyChanged.AlsoNotifyFor(nameof(SqlServerCreateStatement), nameof(SqlServerInsertStatement))]
         public IEnumerable<ParsingField> ParsingFields { get; set; }
         public string SqlServerCreateStatement
         {
@@ -38,7 +38,44 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
             }
         }
 
-        [PropertyChanged.AlsoNotifyFor(nameof(SqlServerCreateStatement))]
+        public string SqlServerInsertStatement
+        {
+            get
+            {
+                if (ParsingFields == null || string.IsNullOrWhiteSpace(SelectedFilePath))
+                {
+                    return null;
+                }
+
+                var friendlyFileName = Regex.Replace(Path.GetFileNameWithoutExtension(SelectedFilePath), "[^a-zA-Z]", "");
+
+                var inserts = Results.Cast<IDictionary<string, object>>().Select(row =>
+                {
+                    var columnNames = ParsingFields.Select(field => field.Name).Select(name => $"[{name}]").Join(",");
+                    var values = ParsingFields.Select(field =>
+                    {
+                        var value = row[field.Name].ToString();
+                        if (string.IsNullOrWhiteSpace(value))
+                        {
+                            return "NULL";
+                        }
+                        if(field.SelectedType is DateTimeParsingType)
+                        {
+                            var dateValue = DateTime.Parse(value);
+                            return $"'{dateValue:yyyy-MM-dd HH:mm:ss}'";
+                        }
+                        return $"'{value.Replace("'", "''")}'";
+                    }).Join(",");
+                    var insert = $"INSERT INTO [{friendlyFileName}] ({columnNames}) VALUES ({values})";
+
+                    return insert;
+                });
+
+                return inserts.Join(Environment.NewLine);
+            }
+        }
+
+        [PropertyChanged.AlsoNotifyFor(nameof(SqlServerCreateStatement), nameof(SqlServerInsertStatement))]
         private DateTime refreshSqlStatement { get; set; }
 
         public void RefreshSqlServerCreateStatement()
@@ -73,7 +110,7 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
             {
                 var records = csv.GetRecords<dynamic>().ToList();
 
-                //this.Results = records;
+                this.Results = records;
 
                 var recordsAsDictionary = records.Cast<IDictionary<string, object>>().ToList();
 

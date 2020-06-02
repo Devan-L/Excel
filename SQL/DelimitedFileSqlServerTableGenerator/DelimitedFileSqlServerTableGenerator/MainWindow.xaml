@@ -20,6 +20,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Grid Margin="5">
@@ -68,7 +69,11 @@
 
         <!--<DataGrid Grid.Row="5" ItemsSource="{Binding Results}" />-->
         <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="Auto">
-            <TextBox Text="{Binding SqlServerCreateStatement,Mode=OneWay}" Margin="5" />            
+            <TextBox Text="{Binding SqlServerCreateStatement,Mode=OneWay}" IsReadOnly="True" Margin="5" />
+        </ScrollViewer>
+
+        <ScrollViewer Grid.Row="6" VerticalScrollBarVisibility="Auto">
+            <TextBox Text="{Binding SqlServerInsertStatement,Mode=OneWay}" IsReadOnly="True" Margin="5" />
         </ScrollViewer>
 
     </Grid>
