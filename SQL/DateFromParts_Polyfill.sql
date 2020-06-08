@@ -1,0 +1,12 @@
+CREATE FUNCTION [dbo].[DateFromParts]
+(
+	@Year INT,
+	@Month INT,
+	@Day INT
+)
+RETURNS DATETIME
+AS
+BEGIN
+	DECLARE @Date VARCHAR(100) = CAST(@Year AS VARCHAR(5)) + '-' + CAST(@Month AS VARCHAR(5)) + '-' + CAST(@Day AS VARCHAR(5))
+	RETURN CAST(@Date AS DATE)
+END
