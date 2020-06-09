@@ -19,8 +19,12 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
         <Grid Margin="5">
@@ -46,8 +50,8 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" Margin="5,0">
-                <TextBlock Text="Delimiter" Margin="3" />
-                <TextBox Text="{Binding Delimiter}" AcceptsTab="True" Margin="3" MinWidth="50" />
+                <!--<TextBlock Text="Delimiter" Margin="3" />
+                <TextBox Text="{Binding Delimiter}" AcceptsTab="True" Margin="3" MinWidth="50" />-->
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1" >
@@ -57,24 +61,33 @@
 
         <Button Grid.Row="2" Content="Parse" Click="ParseFile" Margin="5" />
 
-        <DataGrid Grid.Row="3" ItemsSource="{Binding ParsingFields}" AutoGenerateColumns="False" Margin="5">
+        <DataGrid Grid.Row="3" ItemsSource="{Binding ParsingFields}" AutoGenerateColumns="False" Margin="5" CanUserAddRows="false">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" MinWidth="150" />
+                <DataGridCheckBoxColumn Header="Include" Binding="{Binding Include}" MinWidth="100" />
                 <DataGridCheckBoxColumn Header="Is Nullable" Binding="{Binding SelectedType.IsNullable}" MinWidth="100" />
-                <DataGridTextColumn IsReadOnly="True" Header="Sql Type" Binding="{Binding SelectedType.SqlServerDataType}" MinWidth="150" />
+                <DataGridTextColumn IsReadOnly="True" Header="SQL Type" Binding="{Binding SelectedType.SqlServerDataType}" MinWidth="150" />
             </DataGrid.Columns>
         </DataGrid>
 
-        <Button Grid.Row="4" Content="Refresh SQL" Click="RefreshSql" Margin="5" />
+        <StackPanel Grid.Row="5" Orientation="Horizontal">
+            <TextBlock Text="Schema Name" Margin="5" />
+            <TextBox Text="{Binding SchemaName}" Margin="5" MinWidth="100" />
+            <TextBlock Text="Table Name" Margin="5" />
+            <TextBox Text="{Binding TableName}" Margin="5" MinWidth="100" />
+        </StackPanel>
+        
+        <Button Grid.Row="7" Content="Refresh SQL" Click="RefreshSql" Margin="5" />
 
         <!--<DataGrid Grid.Row="5" ItemsSource="{Binding Results}" />-->
-        <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="8" VerticalScrollBarVisibility="Auto">
             <TextBox Text="{Binding SqlServerCreateStatement,Mode=OneWay}" IsReadOnly="True" Margin="5" />
         </ScrollViewer>
 
-        <ScrollViewer Grid.Row="6" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="9" VerticalScrollBarVisibility="Auto">
             <TextBox Text="{Binding SqlServerInsertStatement,Mode=OneWay}" IsReadOnly="True" Margin="5" />
         </ScrollViewer>
 
+        <Button Grid.Row="10" Content="Copy Insert Statements" Click="CopyInserts" Margin="5" />
     </Grid>
 </Window>

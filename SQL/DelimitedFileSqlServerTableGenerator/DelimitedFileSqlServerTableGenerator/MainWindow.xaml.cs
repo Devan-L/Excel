@@ -36,5 +36,10 @@ namespace DelimitedFileSqlServerTableGenerator
         {
             ViewModel.RefreshSqlServerCreateStatement();
         }
+
+        private void CopyInserts(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(ViewModel.SqlServerInsertStatement);
+        }
     }
 }

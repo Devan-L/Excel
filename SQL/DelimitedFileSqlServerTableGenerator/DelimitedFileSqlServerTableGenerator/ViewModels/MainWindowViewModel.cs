@@ -15,8 +15,12 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
     {
         public string Delimeter { get; set; } = "\t";
         public bool HasHeaderRow { get; set; } = true;
-        public string SelectedFilePath { get; set; } = @"C:\Users\Samji\Downloads\MOCK_DATA (1).txt";
+        public string SelectedFilePath { get; set; } //= @"C:\Users\Samji\Downloads\MOCK_DATA (1).txt";
         public IEnumerable<object> Results { get; set; }
+        [PropertyChanged.AlsoNotifyFor(nameof(SqlServerCreateStatement), nameof(SqlServerInsertStatement))]
+        public string SchemaName { get; set; } = "dbo";
+        [PropertyChanged.AlsoNotifyFor(nameof(SqlServerCreateStatement), nameof(SqlServerInsertStatement))]
+        public string TableName { get; set; }
 
         [PropertyChanged.AlsoNotifyFor(nameof(SqlServerCreateStatement), nameof(SqlServerInsertStatement))]
         public IEnumerable<ParsingField> ParsingFields { get; set; }
@@ -29,11 +33,9 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
                     return null;
                 }
 
-                var friendlyFileName = Regex.Replace(Path.GetFileNameWithoutExtension(SelectedFilePath), "[^a-zA-Z]", "");
+                var columns = ParsingFields.Where(field => field.Include).Select(field => $"\t[{field.Name}] {field.SelectedType.SqlServerDataType} {(field.SelectedType.IsNullable ? "NULL" : "NOT NULL")}").ToList();
 
-                var columns = ParsingFields.Select(field => $"\t[{field.Name}] {field.SelectedType.SqlServerDataType} {(field.SelectedType.IsNullable ? "NULL" : "NOT NULL")}").ToList();
-
-                var createTable = $"CREATE TABLE [{friendlyFileName}] (\n{columns.Join(",\n")}\n)";
+                var createTable = $"CREATE TABLE [{SchemaName}].[{TableName}] (\n{columns.Join(",\n")}\n)";
                 return createTable;
             }
         }
@@ -47,12 +49,10 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
                     return null;
                 }
 
-                var friendlyFileName = Regex.Replace(Path.GetFileNameWithoutExtension(SelectedFilePath), "[^a-zA-Z]", "");
-
                 var inserts = Results.Cast<IDictionary<string, object>>().Select(row =>
                 {
-                    var columnNames = ParsingFields.Select(field => field.Name).Select(name => $"[{name}]").Join(",");
-                    var values = ParsingFields.Select(field =>
+                    var columnNames = ParsingFields.Where(field => field.Include).Select(field => field.Name).Select(name => $"[{name}]").Join(",");
+                    var values = ParsingFields.Where(field => field.Include).Select(field =>
                     {
                         var value = row[field.Name].ToString();
                         if (string.IsNullOrWhiteSpace(value))
@@ -66,7 +66,7 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
                         }
                         return $"'{value.Replace("'", "''")}'";
                     }).Join(",");
-                    var insert = $"INSERT INTO [{friendlyFileName}] ({columnNames}) VALUES ({values})";
+                    var insert = $"INSERT INTO [{SchemaName}].[{TableName}] ({columnNames}) VALUES ({values})";
 
                     return insert;
                 });
@@ -94,6 +94,7 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
             if (openFileDialog.ShowDialog().GetValueOrDefault(false))
             {
                 this.SelectedFilePath = openFileDialog.FileName;
+                ParseFile();
             }
         }
 
@@ -129,6 +130,8 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
                 }).ToList();
 
                 this.ParsingFields = fields;
+                var friendlyFileName = Regex.Replace(Path.GetFileNameWithoutExtension(SelectedFilePath), "[^a-zA-Z]", "");
+                this.TableName = friendlyFileName;
             }
         }
 
@@ -215,6 +218,7 @@ internal static class IEnumerableExtensions
 public class ParsingField
 {
     public string Name { get; set; }
+    public bool Include { get; set; } = true;
     public IEnumerable<IParsingType> ApplicableTypes { get; set; }
     public IParsingType SelectedType { get; set; }
 }
