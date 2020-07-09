@@ -14,36 +14,34 @@
     </Window.Background>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
-        <Grid Margin="5">
-            <!-- Selected file -->
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="{Binding SelectedFilePath}" HorizontalAlignment="Stretch" Margin="3" />
-            <Button Grid.Column="1" Content="Open" Click="OpenFile" Margin="3" Padding="5,0" />
-        </Grid>
+        <Menu>
+            <MenuItem Header="FILE">
+                <MenuItem Header="Open" ToolTip="Open a new delimited file" Click="OpenFile" />
+                <MenuItem Header="Parse" ToolTip="Parse the selected file to generate columns" Click="ParseFile" />
+            </MenuItem>
+            <MenuItem Header="OUTPUT">
+                <MenuItem Header="Refresh" ToolTip="Re-generate SQL with changes made to column types and table/schema names" Click="RefreshSql" />
+                <MenuItem Header="Copy">
+                    <MenuItem Header="Insert statements" Click="CopyInserts" ToolTip="Copy INSERT INTO statements to clipboard" />
+                    <MenuItem Header="Create table" Click="CopyCreateTable" ToolTip="Copy CREATE TABLE statement to clipboard" />
+                </MenuItem>
+            </MenuItem>
+        </Menu>
 
-        <Grid Grid.Row="1">
-            <!-- Parsing options -->
-            <!--<Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>-->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="3" >
+            <TextBlock Text="Selected file: " FontWeight="Bold" Margin="3" />
+            <TextBlock Text="{Binding SelectedFilePath}" HorizontalAlignment="Stretch" Margin="3" FontStyle="Italic" />
+        </StackPanel>
 
+        <Grid Grid.Row="2" Margin="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
@@ -59,35 +57,36 @@
             </StackPanel>
         </Grid>
 
-        <Button Grid.Row="2" Content="Parse" Click="ParseFile" Margin="5" />
-
-        <DataGrid Grid.Row="3" ItemsSource="{Binding ParsingFields}" AutoGenerateColumns="False" Margin="5" CanUserAddRows="false">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" MinWidth="150" />
-                <DataGridCheckBoxColumn Header="Include" Binding="{Binding Include}" MinWidth="100" />
-                <DataGridCheckBoxColumn Header="Is Nullable" Binding="{Binding SelectedType.IsNullable}" MinWidth="100" />
-                <DataGridTextColumn IsReadOnly="True" Header="SQL Type" Binding="{Binding SelectedType.SqlServerDataType}" MinWidth="150" />
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <StackPanel Grid.Row="5" Orientation="Horizontal">
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
             <TextBlock Text="Schema Name" Margin="5" />
             <TextBox Text="{Binding SchemaName}" Margin="5" MinWidth="100" />
             <TextBlock Text="Table Name" Margin="5" />
             <TextBox Text="{Binding TableName}" Margin="5" MinWidth="100" />
         </StackPanel>
-        
-        <Button Grid.Row="7" Content="Refresh SQL" Click="RefreshSql" Margin="5" />
 
-        <!--<DataGrid Grid.Row="5" ItemsSource="{Binding Results}" />-->
-        <ScrollViewer Grid.Row="8" VerticalScrollBarVisibility="Auto">
-            <TextBox Text="{Binding SqlServerCreateStatement,Mode=OneWay}" IsReadOnly="True" Margin="5" />
-        </ScrollViewer>
+        <DataGrid Grid.Row="4" ItemsSource="{Binding ParsingFields}" AutoGenerateColumns="False" Margin="5" CanUserAddRows="false">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" MinWidth="150" />
+                <DataGridCheckBoxColumn Header="Include" Binding="{Binding Include}" MinWidth="100" />
+                <DataGridCheckBoxColumn Header="Is Nullable" Binding="{Binding SelectedType.IsNullable}" MinWidth="100" />
+                <DataGridTextColumn Header="SQL Type" Binding="{Binding SelectedType.SqlServerDataType}" MinWidth="150" />
+            </DataGrid.Columns>
+        </DataGrid>
 
-        <ScrollViewer Grid.Row="9" VerticalScrollBarVisibility="Auto">
-            <TextBox Text="{Binding SqlServerInsertStatement,Mode=OneWay}" IsReadOnly="True" Margin="5" />
-        </ScrollViewer>
+        <TabControl Grid.Row="5" Margin="10">
 
-        <Button Grid.Row="10" Content="Copy Insert Statements" Click="CopyInserts" Margin="5" />
+            <TabItem Header="Insert Data">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <TextBox Text="{Binding SqlServerInsertStatement,Mode=OneWay}" IsReadOnly="True" Margin="5" BorderThickness="0" />
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Create Table">
+                <ScrollViewer Grid.Row="8" VerticalScrollBarVisibility="Auto">
+                    <TextBox Text="{Binding SqlServerCreateStatement,Mode=OneWay}" IsReadOnly="True" Margin="5" BorderThickness="0" />
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
     </Grid>
 </Window>

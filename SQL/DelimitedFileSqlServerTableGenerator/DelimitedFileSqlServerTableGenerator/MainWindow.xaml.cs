@@ -8,7 +8,7 @@ namespace DelimitedFileSqlServerTableGenerator
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindowViewModel ViewModel { get; set; }
+        internal MainWindowViewModel ViewModel { get; set; }
 
         public MainWindow()
         {
@@ -40,6 +40,11 @@ namespace DelimitedFileSqlServerTableGenerator
         private void CopyInserts(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(ViewModel.SqlServerInsertStatement);
+        }
+
+        private void CopyCreateTable(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(ViewModel.SqlServerCreateStatement);
         }
     }
 }

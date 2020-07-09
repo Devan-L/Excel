@@ -1,5 +1,8 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using DelimitedFileSqlServerTableGenerator.Extensions;
+using DelimitedFileSqlServerTableGenerator.Models;
+using DelimitedFileSqlServerTableGenerator.Models.ParsingTypes;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -7,15 +10,19 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows;
+
+// TODO : Add conversion options to fields
+// TODO : Move type resolution to resolver class
 
 namespace DelimitedFileSqlServerTableGenerator.ViewModels
 {
     [PropertyChanged.AddINotifyPropertyChangedInterface]
-    public class MainWindowViewModel
+    internal class MainWindowViewModel
     {
         public string Delimeter { get; set; } = "\t";
         public bool HasHeaderRow { get; set; } = true;
-        public string SelectedFilePath { get; set; } //= @"C:\Users\Samji\Downloads\MOCK_DATA (1).txt";
+        public string SelectedFilePath { get; set; }// = @"C:\Users\Samji\Downloads\MOCK_DATA (1).txt";
         public IEnumerable<object> Results { get; set; }
         [PropertyChanged.AlsoNotifyFor(nameof(SqlServerCreateStatement), nameof(SqlServerInsertStatement))]
         public string SchemaName { get; set; } = "dbo";
@@ -100,38 +107,46 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
 
         public void ParseFile()
         {
-            var csvConfiguration = new CsvConfiguration(CultureInfo.CurrentCulture)
+            try
             {
-                Delimiter = Delimeter,
-                HasHeaderRecord = HasHeaderRow
-            };
-
-            using var reader = new StreamReader(SelectedFilePath);
-            using (var csv = new CsvReader(reader, csvConfiguration))
-            {
-                var records = csv.GetRecords<dynamic>().ToList();
-
-                this.Results = records;
-
-                var recordsAsDictionary = records.Cast<IDictionary<string, object>>().ToList();
-
-                var properties = recordsAsDictionary.FirstOrDefault();
-
-                var fields = properties.Keys.Select(property =>
+                var csvConfiguration = new CsvConfiguration(CultureInfo.CurrentCulture)
                 {
-                    var valuesForProperty = recordsAsDictionary.Select(record => record[property]).Cast<string>().ToList();
-                    var applicableTypes = EvaluateType(valuesForProperty).ToList();
-                    return new ParsingField
-                    {
-                        Name = property,
-                        ApplicableTypes = applicableTypes,
-                        SelectedType = applicableTypes.FirstOrDefault()
-                    };
-                }).ToList();
+                    Delimiter = Delimeter,
+                    HasHeaderRecord = HasHeaderRow
+                };
 
-                this.ParsingFields = fields;
-                var friendlyFileName = Regex.Replace(Path.GetFileNameWithoutExtension(SelectedFilePath), "[^a-zA-Z]", "");
-                this.TableName = friendlyFileName;
+                using var reader = new StreamReader(SelectedFilePath);
+                using (var csv = new CsvReader(reader, csvConfiguration))
+                {
+                    var records = csv.GetRecords<dynamic>().ToList();
+
+                    this.Results = records;
+
+                    var recordsAsDictionary = records.Cast<IDictionary<string, object>>().ToList();
+
+                    var properties = recordsAsDictionary.FirstOrDefault();
+
+                    var fields = properties.Keys.Select(property =>
+                    {
+                        var valuesForProperty = recordsAsDictionary.Select(record => record[property]).Cast<string>().ToList();
+                        var applicableTypes = EvaluateType(valuesForProperty).ToList();
+                        return new ParsingField
+                        {
+                            Name = property,
+                            ApplicableTypes = applicableTypes,
+                            SelectedType = applicableTypes.FirstOrDefault()
+                        };
+                    }).ToList();
+
+                    this.ParsingFields = fields;
+                    var friendlyFileName = Regex.Replace(Path.GetFileNameWithoutExtension(SelectedFilePath), "[^a-zA-Z0-9]", "");
+                    this.TableName = friendlyFileName;
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.ToString());
+                throw;
             }
         }
 
@@ -197,70 +212,4 @@ namespace DelimitedFileSqlServerTableGenerator.ViewModels
             return values.All(value => DateTime.TryParse(value.ToString(), out var result));
         }
     }
-}
-
-internal static class TypeExtensions
-{
-    internal static bool Is<T>(this Type input)
-    {
-        return input == typeof(T);
-    }
-}
-
-internal static class IEnumerableExtensions
-{
-    internal static string Join<T>(this IEnumerable<T> collection, string separator)
-    {
-        return string.Join(separator, collection);
-    }
-}
-
-public class ParsingField
-{
-    public string Name { get; set; }
-    public bool Include { get; set; } = true;
-    public IEnumerable<IParsingType> ApplicableTypes { get; set; }
-    public IParsingType SelectedType { get; set; }
-}
-
-
-public interface IParsingType
-{
-    public bool IsNullable { get; set; }
-    public string SqlServerDataType { get; }
-}
-
-public abstract class ParsingType<T> : IParsingType
-{
-    public bool IsNullable { get; set; }
-    public abstract string SqlServerDataType { get; }
-}
-
-public class StringParsingType : ParsingType<string>
-{
-    public int Length { get; set; }
-
-    public override string SqlServerDataType => $"VARCHAR({Length})";
-}
-
-public class IntegerParsingType : ParsingType<int>
-{
-    public override string SqlServerDataType => "INT";
-}
-
-public class DecimalParsingType : ParsingType<decimal>
-{
-    public int Precision { get; set; }
-
-    public override string SqlServerDataType => $"DECIMAL(0, {Precision})";
-}
-
-public class DateTimeParsingType : ParsingType<DateTime>
-{
-    public override string SqlServerDataType => "DATETIME";
-}
-
-public class BooleanParsingType : ParsingType<DateTime>
-{
-    public override string SqlServerDataType => "BIT";
 }
