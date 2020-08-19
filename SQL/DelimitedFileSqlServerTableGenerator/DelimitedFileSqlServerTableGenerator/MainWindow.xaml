@@ -1,0 +1,92 @@
+﻿<Window x:Class="DelimitedFileSqlServerTableGenerator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DelimitedFileSqlServerTableGenerator"
+        mc:Ignorable="d"
+        Title="SQL Server Delimited File Table Generator" Height="450" Width="800">
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF7DA5D9"/>
+            <GradientStop Color="#FF082A4C" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Menu>
+            <MenuItem Header="FILE">
+                <MenuItem Header="Open" ToolTip="Open a new delimited file" Click="OpenFile" />
+                <MenuItem Header="Parse" ToolTip="Parse the selected file to generate columns" Click="ParseFile" />
+            </MenuItem>
+            <MenuItem Header="OUTPUT">
+                <MenuItem Header="Refresh" ToolTip="Re-generate SQL with changes made to column types and table/schema names" Click="RefreshSql" />
+                <MenuItem Header="Copy">
+                    <MenuItem Header="Insert statements" Click="CopyInserts" ToolTip="Copy INSERT INTO statements to clipboard" />
+                    <MenuItem Header="Create table" Click="CopyCreateTable" ToolTip="Copy CREATE TABLE statement to clipboard" />
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="3" >
+            <TextBlock Text="Selected file: " FontWeight="Bold" Margin="3" />
+            <TextBlock Text="{Binding SelectedFilePath}" HorizontalAlignment="Stretch" Margin="3" FontStyle="Italic" />
+        </StackPanel>
+
+        <Grid Grid.Row="2" Margin="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Margin="5,0">
+                <!--<TextBlock Text="Delimiter" Margin="3" />
+                <TextBox Text="{Binding Delimiter}" AcceptsTab="True" Margin="3" MinWidth="50" />-->
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1" >
+                <CheckBox Content="Has header row?" IsChecked="{Binding HasHeaderRow}" Margin="3"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <TextBlock Text="Schema Name" Margin="5" />
+            <TextBox Text="{Binding SchemaName}" Margin="5" MinWidth="100" />
+            <TextBlock Text="Table Name" Margin="5" />
+            <TextBox Text="{Binding TableName}" Margin="5" MinWidth="100" />
+        </StackPanel>
+
+        <DataGrid Grid.Row="4" ItemsSource="{Binding ParsingFields}" AutoGenerateColumns="False" Margin="5" CanUserAddRows="false">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" MinWidth="150" />
+                <DataGridCheckBoxColumn Header="Include" Binding="{Binding Include}" MinWidth="100" />
+                <DataGridCheckBoxColumn Header="Is Nullable" Binding="{Binding SelectedType.IsNullable}" MinWidth="100" />
+                <DataGridTextColumn Header="SQL Type" Binding="{Binding SelectedType.SqlServerDataType}" MinWidth="150" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TabControl Grid.Row="5" Margin="10">
+
+            <TabItem Header="Insert Data">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <TextBox Text="{Binding SqlServerInsertStatement,Mode=OneWay}" IsReadOnly="True" Margin="5" BorderThickness="0" />
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Create Table">
+                <ScrollViewer Grid.Row="8" VerticalScrollBarVisibility="Auto">
+                    <TextBox Text="{Binding SqlServerCreateStatement,Mode=OneWay}" IsReadOnly="True" Margin="5" BorderThickness="0" />
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>
