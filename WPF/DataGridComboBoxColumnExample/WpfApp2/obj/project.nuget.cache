@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "Rt6SbAAB5iyWUAgcbNVe/M1b3aE7UzAc33m7+kM7cArMMzPri+FiBss1GA3ceaM8993ETOxbPqUJfOAti4N9Dg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Sam\\source\\repos\\WpfApp2\\WpfApp2\\WpfApp2.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Sam\\.nuget\\packages\\fody\\6.3.0\\fody.6.3.0.nupkg.sha512",
+    "C:\\Users\\Sam\\.nuget\\packages\\propertychanged.fody\\3.3.0\\propertychanged.fody.3.3.0.nupkg.sha512"
+  ],
+  "logs": []
+}
