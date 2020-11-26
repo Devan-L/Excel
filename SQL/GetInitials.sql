@@ -1,8 +1,8 @@
-CREATE TABLE People (
+DECLARE @People TABLE (
 	Forename VARCHAR(200) NOT NULL
 )
 
-INSERT INTO People VALUES ('Adfglk Gdfg'), ('Bsdf Ss F'), ('Chfg O''Fdfg'), ('Dfghgfc'), ('E'), ('Fgdfgfd Shgff Gewfsd'), ('Ggbdf Ffdsf-Hdfgd')
+INSERT INTO @People VALUES ('Adfglk Gdfg'), ('Bsdf Ss F'), ('Chfg O''Fdfg'), ('Dfghgfc'), ('E'), ('Fgdfgfd Shgff Gewfsd'), ('Ggbdf Ffdsf-Hdfgd')
 
 GO
 
@@ -34,4 +34,4 @@ END
 
 GO
 
-SELECT *, dbo.GetInitials(Forename) AS Initials FROM People
+SELECT *, dbo.GetInitials(Forename) AS Initials FROM @People
